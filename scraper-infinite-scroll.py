@@ -24,8 +24,10 @@ while True:
     # update scroll height each time after scrolled, as the scroll height can change after we scrolled the page
     scroll_height = driver.execute_script("return document.body.scrollHeight;")  
     # Break the loop when the height we need to scroll to is larger than the total scroll height
-    if (screen_height) * i > scroll_height:
-        break 
+    # if (screen_height) * i > scroll_height:
+    #     break 
+    if i > 5:
+        break
 
 urls = [];
 soup = BeautifulSoup(driver.page_source, "html.parser")
