@@ -10,7 +10,7 @@ def get_database():
     client = MongoClient(CONNECTION_STRING)
 
 dbname = get_database()
-collection_name = dbname["story"]
+collection_name = dbname["short_story"]
 items = collection_name.find()
 
 for item in items:

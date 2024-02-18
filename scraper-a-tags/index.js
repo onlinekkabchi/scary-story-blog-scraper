@@ -1,5 +1,3 @@
-import axios from "axios";
-import jsdom from "jsdom";
 import express from "express";
 import dotenv from "dotenv";
 import webdriver, { By } from "selenium-webdriver";
@@ -7,7 +5,6 @@ import { MongoClient } from "mongodb";
 
 dotenv.config();
 
-const { JSDOM } = jsdom;
 const app = express();
 const port = 3001;
 
@@ -30,8 +27,10 @@ const connectMongo = async () => {
 };
 
 const findAllATagsAfterInfiniteScroll = async () => {
+  // const chrome = new ChromiumWebDriver();
   const driver = await new webdriver.Builder()
     .forBrowser(webdriver.Browser.CHROME)
+    // .setChromeOptions()
     .build();
 
   try {
@@ -39,7 +38,7 @@ const findAllATagsAfterInfiniteScroll = async () => {
 
     let std = 0;
 
-    while (std < 5) {
+    while (std < 2) {
       // let lastHeight = await driver.executeScript(
       //   "return document.body.scrollHeight"
       // );
@@ -56,9 +55,19 @@ const findAllATagsAfterInfiniteScroll = async () => {
 
     for (let tag of tags) {
       const href = await tag.getAttribute("href");
+      // const text = await tag.getText();
       // console.log(tag.getAttribute("href"));
       // href.includes("comment") ? taglength++ : "";
+      // href.includes("comment") && filterTags.push(tag);
+      // href.includes("comment") && filterTags.push({ href: href, text: text });
+      const inner = await tag.getAttribute("innerHTML");
+      const text = await tag.getText();
+      href.includes("comment") &&
+        filterTags.push({ href: href, innerHTML: inner, text: text });
     }
+
+    // console.log(filterTags);
+    return filterTags;
   } catch (err) {
     console.log(err);
   } finally {
@@ -69,11 +78,13 @@ app.get("/connect", (req, res) => {
   connectMongo();
 });
 
-app.get("/tags", (req, res) => {
-  findAllATagsAfterInfiniteScroll();
+app.get("/tags", async (req, res) => {
+  const result = await findAllATagsAfterInfiniteScroll();
+  res.send(result);
 });
 
 app.get("/", (req, res) => {
+  connectMongo();
   res.send("hi");
 });
 
